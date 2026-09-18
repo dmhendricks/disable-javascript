@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Disable JavaScript</title>
+        <link rel="stylesheet" href="./options.scss" />
+    </head>
+    <body>
+        <div class="atmosphere" aria-hidden="true"></div>
+
+        <div class="page">
+            <header class="site-header">
+                <div class="brand">
+                    <img
+                        class="brand__icon"
+                        src="/images/logo.svg"
+                        width="40"
+                        height="40"
+                        alt=""
+                    />
+                    <div class="brand__text">
+                        <h1>Disable JavaScript</h1>
+                        <span class="version">%MANIFEST_VERSION%</span>
+                    </div>
+                </div>
+
+                <div class="header-actions">
+                    <a
+                        class="github"
+                        href="https://github.com/dmhendricks/disable-javascript"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="Source on GitHub"
+                        title="Source on GitHub"
+                    >
+                        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                            <path
+                                d="M12 .3a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2.2c-3.3.7-4-1.6-4-1.6-.5-1.4-1.3-1.8-1.3-1.8-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1.1 1.8 2.8 1.3 3.5 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-6 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.6.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.6.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.7-2.8 5.7-5.5 6 .4.3.8 1 .8 2.1v3.1c0 .3.2.7.8.6A12 12 0 0 0 12 .3Z"
+                            />
+                        </svg>
+                    </a>
+                </div>
+            </header>
+
+            <section class="card how">
+                <h2>How it works</h2>
+                <ul class="shortcuts">
+                    <li>
+                        <kbd>Click</kbd>
+                        <span>the toolbar icon to turn JavaScript off or on for this site</span>
+                    </li>
+                    <li>
+                        <kbd id="shortcut-display">Alt+Shift+O</kbd>
+                        <span>
+                            opens this page
+                            <span class="shortcut-platform">(macOS: Option+Shift+O)</span>
+                        </span>
+                    </li>
+                </ul>
+                <p class="shortcut-customize">
+                    Rebind shortcuts at
+                    <button type="button" class="text-link" id="open-shortcuts">
+                        chrome://extensions/shortcuts
+                    </button>
+                    . The toolbar icon never opens settings.
+                </p>
+            </section>
+
+            <section class="card sites" aria-labelledby="sites-heading">
+                <div class="sites__header">
+                    <h2 id="sites-heading">Blocked sites</h2>
+                    <button type="button" class="btn btn--danger" id="clear-all" hidden>
+                        Clear all
+                    </button>
+                </div>
+                <p class="lede">
+                    JavaScript stays off on these origins until you re-enable them here or click the
+                    toolbar icon on the site.
+                </p>
+                <label class="search" id="search-wrap" hidden>
+                    <span class="visually-hidden">Filter blocked sites</span>
+                    <input type="search" id="search" placeholder="Filter origins" autocomplete="off" />
+                </label>
+                <p class="empty" id="empty">
+                    No sites are blocked. Open a normal website and click the toolbar icon.
+                </p>
+                <ul class="site-list" id="site-list"></ul>
+            </section>
+        </div>
+
+        <script type="module" src="./options.ts"></script>
+    </body>
+</html>

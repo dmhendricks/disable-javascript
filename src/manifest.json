@@ -1,0 +1,45 @@
+{
+    "name": "Disable JavaScript",
+    "manifest_version": 3,
+    "version": "1.0.0",
+    "description": "Toggle JavaScript on or off for the current site from the toolbar.",
+    "author": "Daniel M. Hendricks",
+    "homepage_url": "https://github.com/dmhendricks/disable-javascript",
+    "minimum_chrome_version": "120",
+    "icons": {
+        "16": "images/16.png",
+        "32": "images/32.png",
+        "48": "images/48.png",
+        "128": "images/128.png"
+    },
+    "action": {
+        "default_icon": {
+            "16": "images/16.png",
+            "32": "images/32.png",
+            "48": "images/48.png"
+        },
+        "default_title": "Disable JavaScript"
+    },
+    "options_page": "src/options/options.html",
+    "background": {
+        "service_worker": "src/background.ts",
+        "type": "module"
+    },
+    "permissions": ["contentSettings", "tabs", "storage"],
+    "incognito": "spanning",
+    "commands": {
+        "open-options": {
+            "suggested_key": {
+                "default": "Alt+Shift+O",
+                "windows": "Alt+Shift+O",
+                "mac": "Alt+Shift+O",
+                "chromeos": "Alt+Shift+O",
+                "linux": "Alt+Shift+O"
+            },
+            "description": "Open Disable JavaScript settings"
+        },
+        "_execute_action": {
+            "description": "Toggle JavaScript for the current site"
+        }
+    }
+}
