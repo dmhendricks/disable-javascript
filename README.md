@@ -25,7 +25,7 @@ This extension is not on the Chrome Web Store yet. Load it unpacked:
 
 | Action | Windows / Linux | macOS |
 | --- | --- | --- |
-| Open settings | `Alt+Shift+O` | `Option+Shift+O` |
+| Open settings | `Alt+Shift+J` | `Option+Shift+J` |
 | Toggle JavaScript | *(none by default — bind `_execute_action` if you want one)* | same |
 
 Customize shortcuts at `chrome://extensions/shortcuts`. The toolbar icon never opens settings.

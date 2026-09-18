@@ -30,11 +30,11 @@
     "commands": {
         "open-options": {
             "suggested_key": {
-                "default": "Alt+Shift+O",
-                "windows": "Alt+Shift+O",
-                "mac": "Alt+Shift+O",
-                "chromeos": "Alt+Shift+O",
-                "linux": "Alt+Shift+O"
+                "default": "Alt+Shift+J",
+                "windows": "Alt+Shift+J",
+                "mac": "Alt+Shift+J",
+                "chromeos": "Alt+Shift+J",
+                "linux": "Alt+Shift+J"
             },
             "description": "Open Disable JavaScript settings"
         },

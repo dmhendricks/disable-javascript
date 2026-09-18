@@ -43,7 +43,7 @@ async function loadShortcutLabel(): Promise<void> {
     if (!shortcutDisplay) return;
     const commands = await chrome.commands.getAll();
     const open = commands.find((command) => command.name === 'open-options');
-    shortcutDisplay.textContent = formatShortcut(open?.shortcut) || 'Alt+Shift+O';
+    shortcutDisplay.textContent = formatShortcut(open?.shortcut) || 'Alt+Shift+J';
 }
 
 async function healStale(scope: ContentScope, patterns: string[]): Promise<string[]> {
