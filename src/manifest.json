@@ -2,7 +2,7 @@
     "name": "Disable JavaScript",
     "manifest_version": 3,
     "version": "1.0.0",
-    "description": "Toggle JavaScript on or off for the current site from the toolbar.",
+    "description": "A browser extension to disable JavaScript on a per-site basis from the toolbar.",
     "author": "Daniel M. Hendricks",
     "homepage_url": "https://github.com/dmhendricks/disable-javascript",
     "minimum_chrome_version": "120",
