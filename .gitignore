@@ -15,6 +15,7 @@ audits/report/
 *.njsproj
 *.sln
 *.sw?
+*.zip
 *.bak
 *.bak.*
 
