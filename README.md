@@ -3,9 +3,9 @@
 
 # Disable JavaScript
 
-Toggle JavaScript on or off for the **current site** from the toolbar. The setting applies to that origin (scheme + host + port), not to every tab in the browser.
+![Screenshot](store/disable-javascript-1400x560.png)
 
-Clicking the toolbar icon always toggles JavaScript. Settings open from a keyboard shortcut, never from the icon.
+Toggle JavaScript on or off for the **current site** from the toolbar. The setting applies to that origin (scheme + host + port), not to every tab in the browser.
 
 ## Installation
 
