@@ -1,55 +1,30 @@
 /*!
  * chrome.contentSettings.javascript wrappers.
  *
- * Callbacks always read lastError so Manage Extensions stays quiet.
+ * Prefer these over calling the API directly so allow/block stays typed and
+ * we never scatter primaryPattern / scope details through the UI.
  */
 
 import type { ContentScope } from './settings';
 
 export type JavascriptSetting = 'allow' | 'block';
 
-export function getJavascriptSetting(
+export async function getJavascriptSetting(
     url: string,
     incognito: boolean,
 ): Promise<JavascriptSetting> {
-    return new Promise((resolve, reject) => {
-        chrome.contentSettings.javascript.get({ primaryUrl: url, incognito }, (result) => {
-            const err = chrome.runtime.lastError;
-            if (err) {
-                reject(new Error(err.message));
-                return;
-            }
-            resolve(result.setting === 'block' ? 'block' : 'allow');
-        });
-    });
+    const result = await chrome.contentSettings.javascript.get({ primaryUrl: url, incognito });
+    return result.setting === 'block' ? 'block' : 'allow';
 }
 
-export function setJavascriptSetting(
+export async function setJavascriptSetting(
     pattern: string,
     setting: JavascriptSetting,
     scope: ContentScope,
 ): Promise<void> {
-    return new Promise((resolve, reject) => {
-        chrome.contentSettings.javascript.set({ primaryPattern: pattern, setting, scope }, () => {
-            const err = chrome.runtime.lastError;
-            if (err) {
-                reject(new Error(err.message));
-                return;
-            }
-            resolve();
-        });
-    });
+    await chrome.contentSettings.javascript.set({ primaryPattern: pattern, setting, scope });
 }
 
-export function clearJavascriptSettings(scope: ContentScope): Promise<void> {
-    return new Promise((resolve, reject) => {
-        chrome.contentSettings.javascript.clear({ scope }, () => {
-            const err = chrome.runtime.lastError;
-            if (err) {
-                reject(new Error(err.message));
-                return;
-            }
-            resolve();
-        });
-    });
+export async function clearJavascriptSettings(scope: ContentScope): Promise<void> {
+    await chrome.contentSettings.javascript.clear({ scope });
 }

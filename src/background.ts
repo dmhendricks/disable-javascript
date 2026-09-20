@@ -6,10 +6,10 @@
  * Restricted URLs (chrome://, Web Store, file://, …) get a small popup.
  */
 
-import { addBlocked, removeBlocked, type ContentScope } from './lib/settings';
+import { addBlocked, listBlocked, removeBlocked, type ContentScope } from './lib/settings';
 import { getJavascriptSetting, setJavascriptSetting } from './lib/javascript';
-import { isRestrictedUrl, originPatternFromUrl } from './lib/origin';
-import { getTab, reloadTab, setTabIcon, setTabPopup, setTabTitle } from './lib/chrome';
+import { isRestrictedUrl, originPatternFromUrl, urlMatchesPattern } from './lib/origin';
+import { getTab, queryTabs, reloadTab, setTabIcon, setTabPopup, setTabTitle } from './lib/chrome';
 
 const ACTION_TITLE_ALLOWED = 'JavaScript is on — click to disable for this site';
 const ACTION_TITLE_BLOCKED = 'JavaScript is off — click to enable for this site';
@@ -28,11 +28,41 @@ const ACTION_ICON_BLOCKED: Record<string, string> = {
     '48': 'images/48-blocked.png',
 };
 
+/** Tabs we just toggled — wait for load complete before painting the new icon. */
+const pendingReload = new Set<number>();
+
 function contentScope(incognito: boolean): ContentScope {
     return incognito ? 'incognito_session_only' : 'regular';
 }
 
-async function syncActionPopup(tabId: number, url: string | undefined): Promise<void> {
+async function applyActionUi(tabId: number, blocked: boolean): Promise<void> {
+    const ok = await setTabIcon(tabId, blocked ? ACTION_ICON_BLOCKED : ACTION_ICON_ALLOWED);
+    if (!ok) return;
+    await setTabTitle(tabId, blocked ? ACTION_TITLE_BLOCKED : ACTION_TITLE_ALLOWED);
+}
+
+async function paintTabsForPattern(
+    pattern: string,
+    blocked: boolean,
+    incognito: boolean,
+    exceptTabId?: number,
+): Promise<void> {
+    const tabs = await queryTabs({});
+    for (const tab of tabs) {
+        if (tab.id == null || tab.id === exceptTabId || !tab.url || tab.incognito !== incognito) {
+            continue;
+        }
+        if (urlMatchesPattern(tab.url, pattern)) {
+            void applyActionUi(tab.id, blocked);
+        }
+    }
+}
+
+async function syncActionPopup(
+    tabId: number,
+    url: string | undefined,
+    incognito = false,
+): Promise<void> {
     if (!url) return;
 
     const restricted = isRestrictedUrl(url) || originPatternFromUrl(url) == null;
@@ -45,31 +75,23 @@ async function syncActionPopup(tabId: number, url: string | undefined): Promise<
         return;
     }
 
-    await syncActionUi(tabId, url, false);
-}
-
-async function syncActionUi(
-    tabId: number,
-    url: string,
-    incognito: boolean,
-): Promise<void> {
-    let setting: 'allow' | 'block' = 'allow';
-    try {
-        setting = await getJavascriptSetting(url, incognito);
-    } catch (err) {
-        console.warn('[Disable JavaScript] get setting failed', err);
+    const pattern = originPatternFromUrl(url);
+    if (!pattern) {
+        await applyActionUi(tabId, false);
+        return;
     }
 
-    const blocked = setting === 'block';
-    const ok = await setTabIcon(tabId, blocked ? ACTION_ICON_BLOCKED : ACTION_ICON_ALLOWED);
-    if (!ok) return;
-    await setTabTitle(tabId, blocked ? ACTION_TITLE_BLOCKED : ACTION_TITLE_ALLOWED);
+    // Trust the blocked list, not contentSettings.get(), during navigation.
+    // get() can report "allow" while the tab is reloading, which paints the
+    // default green icon even though JS is already blocked.
+    const blocked = (await listBlocked(contentScope(incognito))).includes(pattern);
+    await applyActionUi(tabId, blocked);
 }
 
 async function syncTab(tabId: number): Promise<void> {
     const tab = await getTab(tabId);
     if (!tab) return;
-    await syncActionPopup(tabId, tab.url);
+    await syncActionPopup(tabId, tab.url, tab.incognito);
 }
 
 async function showUnsupportedForTab(tab: chrome.tabs.Tab): Promise<void> {
@@ -123,24 +145,22 @@ async function toggleJavascript(tab: chrome.tabs.Tab): Promise<void> {
 
     const current = await getJavascriptSetting(url, incognito);
     const next = current === 'allow' ? 'block' : 'allow';
+    const blocked = next === 'block';
     const scope = contentScope(incognito);
 
     await setJavascriptSetting(pattern, next, scope);
-    if (next === 'block') {
+    if (blocked) {
         await addBlocked(pattern, scope);
     } else {
         await removeBlocked(pattern, scope);
     }
 
+    // Do not paint this tab until reload completes. Updating earlier (or on
+    // URL change mid-navigation) is the green/red flicker. Other tabs on the
+    // same origin are not reloading, so they can update immediately.
+    pendingReload.add(tabId);
+    void paintTabsForPattern(pattern, blocked, incognito, tabId);
     await reloadTab(tabId);
-}
-
-async function syncAllHttpTabs(): Promise<void> {
-    const tabs = await chrome.tabs.query({});
-    for (const tab of tabs) {
-        if (tab.id == null) continue;
-        void syncActionPopup(tab.id, tab.url);
-    }
 }
 
 chrome.action.onClicked.addListener((tab) => {
@@ -156,21 +176,30 @@ chrome.commands.onCommand.addListener((command) => {
 });
 
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-    if (changeInfo.url || changeInfo.status === 'complete') {
-        void syncActionPopup(tabId, tab.url ?? changeInfo.url);
+    if (pendingReload.has(tabId)) {
+        if (changeInfo.status !== 'complete') return;
+        pendingReload.delete(tabId);
+        void syncActionPopup(tabId, tab.url, tab.incognito);
+        return;
     }
+
+    // Chrome resets the tab action icon to default_icon on navigation.
+    // Re-apply when the URL changes or the load finishes.
+    if (!changeInfo.url && changeInfo.status !== 'complete') return;
+    void syncActionPopup(tabId, tab.url ?? changeInfo.url, tab.incognito);
 });
 
 chrome.tabs.onActivated.addListener((activeInfo) => {
+    if (pendingReload.has(activeInfo.tabId)) return;
     void syncTab(activeInfo.tabId);
 });
 
-chrome.storage.onChanged.addListener(() => {
-    void syncAllHttpTabs();
+chrome.tabs.onRemoved.addListener((tabId) => {
+    pendingReload.delete(tabId);
 });
 
 chrome.tabs.query({ active: true, lastFocusedWindow: true }, (tabs) => {
     if (chrome.runtime.lastError) return;
     const tab = tabs[0];
-    if (tab?.id != null) void syncActionPopup(tab.id, tab.url);
+    if (tab?.id != null) void syncActionPopup(tab.id, tab.url, tab.incognito);
 });

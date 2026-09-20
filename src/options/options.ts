@@ -35,7 +35,7 @@ type BlockedRow = {
 let rows: BlockedRow[] = [];
 
 function formatShortcut(shortcut: string | undefined): string {
-    if (!shortcut) return 'not set';
+    if (!shortcut) return '';
     return shortcut.replaceAll('MacCtrl', 'Control').replaceAll('Command', '⌘');
 }
 
@@ -50,7 +50,11 @@ async function healStale(scope: ContentScope, patterns: string[]): Promise<strin
     const kept: string[] = [];
     for (const pattern of patterns) {
         const sample = patternToSampleUrl(pattern);
-        if (!sample) continue;
+        if (!sample) {
+            // Malformed leftover — drop it so the list cannot grow junk.
+            await removeBlocked(pattern, scope);
+            continue;
+        }
         try {
             const setting = await getJavascriptSetting(
                 sample,

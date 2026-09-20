@@ -14,15 +14,20 @@ describe('isRestrictedUrl', () => {
         expect(isRestrictedUrl('edge://extensions')).toBe(true);
         expect(isRestrictedUrl('about:blank')).toBe(true);
         expect(isRestrictedUrl('devtools://devtools/bundled/devtools_app.html')).toBe(true);
-        expect(isRestrictedUrl('file:///tmp/index.html')).toBe(true);
-        expect(isRestrictedUrl('view-source:https://example.com')).toBe(true);
         expect(isRestrictedUrl('https://chrome.google.com/webstore')).toBe(true);
         expect(isRestrictedUrl('https://chromewebstore.google.com/detail/x')).toBe(true);
+    });
+
+    it('does not treat prefix-lookalike hosts as the Web Store', () => {
+        expect(isRestrictedUrl('https://chrome.google.com.evil.example/')).toBe(false);
+        expect(isRestrictedUrl('https://chrome.google.com/')).toBe(false);
     });
 
     it('allows normal http(s) pages', () => {
         expect(isRestrictedUrl('https://example.com/')).toBe(false);
         expect(isRestrictedUrl('http://localhost:3000/app')).toBe(false);
+        expect(isRestrictedUrl('file:///tmp/index.html')).toBe(false);
+        expect(isRestrictedUrl('view-source:https://example.com')).toBe(false);
     });
 });
 

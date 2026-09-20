@@ -12,14 +12,23 @@ const RESTRICTED_PREFIXES = [
     'edge://',
     'about:',
     'devtools://',
-    'view-source:',
-    'file://',
-    'https://chrome.google.com',
-    'https://chromewebstore.google.com',
 ] as const;
 
+/** Host + path, not startsWith — `https://chrome.google.com.evil.example` must not match. */
+function isChromeWebStore(url: string): boolean {
+    try {
+        const parsed = new URL(url);
+        if (parsed.protocol !== 'https:') return false;
+        if (parsed.hostname === 'chromewebstore.google.com') return true;
+        return parsed.hostname === 'chrome.google.com' && parsed.pathname.startsWith('/webstore');
+    } catch {
+        return false;
+    }
+}
+
 export function isRestrictedUrl(url: string): boolean {
-    return RESTRICTED_PREFIXES.some((prefix) => url.startsWith(prefix));
+    if (RESTRICTED_PREFIXES.some((prefix) => url.startsWith(prefix))) return true;
+    return isChromeWebStore(url);
 }
 
 /** Content-setting hostname: IPv6 must be wrapped in brackets. */

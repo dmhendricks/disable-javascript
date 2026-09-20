@@ -7,19 +7,17 @@
 
 export type ContentScope = 'regular' | 'incognito_session_only';
 
-export const BLOCKED_LOCAL_KEY = 'blockedPatterns';
-export const BLOCKED_SESSION_KEY = 'blockedPatternsIncognito';
+const BLOCKED_LOCAL_KEY = 'blockedPatterns';
+const BLOCKED_SESSION_KEY = 'blockedPatternsIncognito';
 
 export function parsePatternList(raw: unknown): string[] {
     if (!Array.isArray(raw)) return [];
 
-    const out: string[] = [];
+    const unique = new Set<string>();
     for (const item of raw) {
-        if (typeof item === 'string' && item.length > 0 && !out.includes(item)) {
-            out.push(item);
-        }
+        if (typeof item === 'string' && item.length > 0) unique.add(item);
     }
-    return out.sort((a, b) => a.localeCompare(b));
+    return [...unique].sort((a, b) => a.localeCompare(b));
 }
 
 export function withPattern(list: string[], pattern: string): string[] {
