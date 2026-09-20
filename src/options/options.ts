@@ -34,16 +34,33 @@ type BlockedRow = {
 
 let rows: BlockedRow[] = [];
 
+/** Chrome reports macOS shortcuts as glyphs (⌥⇧J); spell them out so they stay legible. */
+const MODIFIER_WORDS: Record<string, string> = {
+    '⌘': 'Command',
+    '⌥': 'Option',
+    '⇧': 'Shift',
+    '⌃': 'Control',
+    MacCtrl: 'Control',
+};
+
 function formatShortcut(shortcut: string | undefined): string {
     if (!shortcut) return '';
-    return shortcut.replaceAll('MacCtrl', 'Control').replaceAll('Command', '⌘');
+    const parts = [...shortcut.matchAll(/⌘|⌥|⇧|⌃|[^⌘⌥⇧⌃+]+/g)]
+        .map((match) => match[0].trim())
+        .filter(Boolean)
+        .map((part) => MODIFIER_WORDS[part] ?? part);
+    return parts.join('+');
 }
 
 async function loadShortcutLabel(): Promise<void> {
     if (!shortcutDisplay) return;
     const commands = await chrome.commands.getAll();
-    const open = commands.find((command) => command.name === 'open-options');
-    shortcutDisplay.textContent = formatShortcut(open?.shortcut) || 'Alt+Shift+J';
+    const toggle = commands.find((command) => command.name === '_execute_action');
+    const label = formatShortcut(toggle?.shortcut);
+    // Users can clear the binding at chrome://extensions/shortcuts; hide the row
+    // rather than advertise a key that does nothing.
+    shortcutDisplay.closest('li')?.toggleAttribute('hidden', !label);
+    shortcutDisplay.textContent = label;
 }
 
 async function healStale(scope: ContentScope, patterns: string[]): Promise<string[]> {

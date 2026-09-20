@@ -5,7 +5,7 @@
 
 ![Screenshot](store/disable-javascript-1400x560.jpg)
 
-Toggle JavaScript on or off for the **current site** from the toolbar. The setting applies to that origin (scheme + host + port), not to every tab in the browser.
+Toggle JavaScript (enable/disable) for the **current site** from the toolbar. The setting applies to that origin (scheme + host + port), not to every tab in the browser.
 
 ## Installation
 
@@ -19,18 +19,9 @@ This extension is not on the Chrome Web Store yet. Load it unpacked:
 ## Usage
 
 - Click the toolbar icon to disable or re-enable JavaScript for the site in the active tab. The tab reloads so the change actually takes effect.
-- Blocked origins stay blocked until you toggle them again or re-enable them on the settings page.
-
-#### Keyboard shortcuts
-
-| Action | Windows / Linux | macOS |
-| --- | --- | --- |
-| Open settings | `Alt+Shift+J` | `Option+Shift+J` |
-| Toggle JavaScript | *(none by default — bind `_execute_action` if you want one)* | same |
-
-Customize shortcuts at `chrome://extensions/shortcuts`. The toolbar icon never opens settings.
-
-On `chrome://` pages, the Chrome Web Store, `file://` URLs, and similar restricted surfaces, the icon shows a short “not supported” popup instead of toggling.
+- Press `Alt+Shift+J` (`Option+Shift+J` on macOS) to do the same thing from the keyboard. Rebind it at `chrome://extensions/shortcuts`.
+- Right-click the toolbar icon and choose **Options** to open the options page.
+- Blocked sites stay blocked until you toggle them again or re-enable them on the options page.
 
 ## Development
 
@@ -45,15 +36,3 @@ npm run test
 ```
 
 Then load unpacked from `dist/` as above.
-
-## Permissions
-
-- **contentSettings** — block or allow JavaScript for a site. Chrome’s install warning mentions cookies, camera, and other features; this extension only changes JavaScript.
-- **tabs** — read the active tab’s URL so the icon can show the current site’s state when you switch tabs.
-- **storage** — remember which origins this extension blocked, because Chrome cannot list content-setting rules.
-
-No host permissions. No debugger. No analytics.
-
-## License
-
-[MIT](LICENSE)

@@ -11,9 +11,9 @@ import { getJavascriptSetting, setJavascriptSetting } from './lib/javascript';
 import { isRestrictedUrl, originPatternFromUrl, urlMatchesPattern } from './lib/origin';
 import { getTab, queryTabs, reloadTab, setTabIcon, setTabPopup, setTabTitle } from './lib/chrome';
 
-const ACTION_TITLE_ALLOWED = 'JavaScript is on — click to disable for this site';
-const ACTION_TITLE_BLOCKED = 'JavaScript is off — click to enable for this site';
-const ACTION_TITLE_RESTRICTED = 'Disable JavaScript — not available on this page';
+const ACTION_TITLE_ALLOWED = 'JavaScript is On — Click to disable for this site';
+const ACTION_TITLE_BLOCKED = 'JavaScript is Off — Click to enable for this site';
+const ACTION_TITLE_RESTRICTED = 'Disable JavaScript — Not available on this page';
 const UNSUPPORTED_POPUP = 'unsupported.html';
 
 const ACTION_ICON_ALLOWED: Record<string, string> = {

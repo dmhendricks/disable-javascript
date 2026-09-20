@@ -232,10 +232,6 @@ body {
     font-size: 0.98rem;
 }
 
-.shortcut-platform {
-    opacity: 0.85;
-}
-
 .shortcut-customize {
     margin: 0.75rem 0 0;
     color: var(--dj-text-muted);
@@ -326,6 +322,9 @@ kbd {
     display: flex;
     flex-direction: column;
     gap: 0.45rem;
+    max-height: 55vh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
 }
 
 .site {
