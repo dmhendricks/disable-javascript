@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
     displayLabelFromPattern,
+    filterLabelFromPattern,
     isRestrictedUrl,
     originPatternFromUrl,
     patternToSampleUrl,
@@ -81,5 +82,24 @@ describe('displayLabelFromPattern / patternToSampleUrl / urlMatchesPattern', () 
             false,
         );
         expect(urlMatchesPattern('http://example.com/foo', 'https://example.com/*')).toBe(false);
+    });
+});
+
+describe('filterLabelFromPattern', () => {
+    it('drops the scheme so filtering never matches on https://', () => {
+        expect(filterLabelFromPattern('https://twitchy.com/*')).toBe('twitchy.com');
+        expect(filterLabelFromPattern('http://redstate.com/*')).toBe('redstate.com');
+    });
+
+    it('keeps a non-default port', () => {
+        expect(filterLabelFromPattern('http://localhost:3000/*')).toBe('localhost:3000');
+    });
+
+    it('does not match a host lacking the query character', () => {
+        const matches = (pattern: string, query: string) =>
+            filterLabelFromPattern(pattern).toLowerCase().includes(query);
+
+        expect(matches('https://twitchy.com/*', 's')).toBe(false);
+        expect(matches('https://redstate.com/*', 's')).toBe(true);
     });
 });

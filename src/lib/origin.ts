@@ -64,6 +64,11 @@ export function displayLabelFromPattern(pattern: string): string {
     return pattern.endsWith('/*') ? pattern.slice(0, -2) : pattern;
 }
 
+/** Host (and port) without the scheme, so filtering never matches on `https://`. */
+export function filterLabelFromPattern(pattern: string): string {
+    return displayLabelFromPattern(pattern).replace(/^[a-z][a-z0-9+.-]*:\/\//i, '');
+}
+
 /** A concrete URL `get()` will accept for this pattern. */
 export function patternToSampleUrl(pattern: string): string | null {
     if (!pattern.endsWith('/*')) return null;

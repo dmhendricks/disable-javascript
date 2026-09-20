@@ -115,8 +115,11 @@ body {
 
 .brand__icon {
     flex-shrink: 0;
+    box-sizing: border-box;
     width: 2.5rem;
     height: 2.5rem;
+    padding: 0.3rem;
+    background: var(--dj-bg-elevated);
     border-radius: 0.55rem;
     box-shadow:
         0 0 0 1px var(--dj-border),
@@ -371,10 +374,13 @@ kbd {
     appearance: none;
     flex-shrink: 0;
     margin: 0;
-    padding: 0.4rem 0.75rem;
+    // Avenir Next sits high in its line box, leaving ~1.7px more room below the
+    // baseline than above the caps; the uneven padding optically recenters it.
+    padding: 0.45rem 0.75rem 0.35rem;
     font: inherit;
     font-size: 0.82rem;
     font-weight: 650;
+    line-height: 1.2;
     color: var(--dj-text);
     background: color-mix(in srgb, var(--dj-blue) 16%, transparent);
     border: 1px solid color-mix(in srgb, var(--dj-blue) 40%, transparent);

@@ -5,7 +5,7 @@
  * an allow content setting, drops the mirror entry, and reloads matching tabs.
  */
 
-import { displayLabelFromPattern, patternToSampleUrl } from '../lib/origin';
+import { displayLabelFromPattern, filterLabelFromPattern, patternToSampleUrl } from '../lib/origin';
 import {
     clearBlocked,
     listBlocked,
@@ -96,7 +96,7 @@ async function loadRows(): Promise<void> {
 function filteredRows(): BlockedRow[] {
     const query = searchInput?.value.trim().toLowerCase() ?? '';
     if (!query) return rows;
-    return rows.filter((row) => displayLabelFromPattern(row.pattern).toLowerCase().includes(query));
+    return rows.filter((row) => filterLabelFromPattern(row.pattern).toLowerCase().includes(query));
 }
 
 function render(): void {
@@ -132,7 +132,7 @@ function render(): void {
         const button = document.createElement('button');
         button.type = 'button';
         button.className = 'btn';
-        button.textContent = 'Re-enable';
+        button.textContent = 'Re-Enable';
         button.addEventListener('click', () => {
             void reenable(row);
         });
