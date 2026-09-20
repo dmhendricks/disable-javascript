@@ -3,7 +3,7 @@
 
 # Disable JavaScript
 
-![Screenshot](store/disable-javascript-1400x560.png)
+![Screenshot](store/disable-javascript-1400x560.jpg)
 
 Toggle JavaScript on or off for the **current site** from the toolbar. The setting applies to that origin (scheme + host + port), not to every tab in the browser.
 
