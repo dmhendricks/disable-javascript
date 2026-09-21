@@ -1,8 +1,8 @@
 /*!
  * Disable JavaScript — service worker.
  *
- * Toolbar click toggles chrome.contentSettings.javascript for the active tab's
- * origin and reloads. The icon never opens settings; Alt+Shift+J does.
+ * Toolbar click (and Alt+Shift+J) toggles chrome.contentSettings.javascript
+ * for the active tab's origin and reloads. The icon never opens settings.
  * Restricted URLs (chrome://, Web Store, file://, …) get a small popup.
  */
 
