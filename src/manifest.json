@@ -2,7 +2,7 @@
     "name": "Disable JavaScript",
     "manifest_version": 3,
     "version": "1.0.0",
-    "description": "Toggle JavaScript for the current tab.",
+    "description": "Toggle JavaScript for the current site.",
     "author": "Daniel M. Hendricks",
     "homepage_url": "https://github.com/dmhendricks/disable-javascript",
     "minimum_chrome_version": "120",

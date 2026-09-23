@@ -57,7 +57,7 @@ async function loadShortcutLabel(): Promise<void> {
     const commands = await chrome.commands.getAll();
     const toggle = commands.find((command) => command.name === '_execute_action');
     const label = formatShortcut(toggle?.shortcut);
-    // Users can clear the binding at chrome://extensions/shortcuts; hide the row
+    // Users can clear the binding on the browser's shortcuts page; hide the row
     // rather than advertise a key that does nothing.
     shortcutDisplay.closest('li')?.toggleAttribute('hidden', !label);
     shortcutDisplay.textContent = label;
@@ -195,8 +195,15 @@ async function clearAll(): Promise<void> {
     render();
 }
 
+/** Edge's shortcuts page is edge://extensions/shortcuts. */
+function shortcutsPageUrl(): string {
+    return navigator.userAgent.includes('Edg/')
+        ? 'edge://extensions/shortcuts'
+        : 'chrome://extensions/shortcuts';
+}
+
 openShortcutsBtn?.addEventListener('click', () => {
-    void chrome.tabs.create({ url: 'chrome://extensions/shortcuts' });
+    void chrome.tabs.create({ url: shortcutsPageUrl() });
 });
 
 searchInput?.addEventListener('input', () => {
